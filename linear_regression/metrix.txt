@@ -1,0 +1,125 @@
+0.1:
+
+Datensatz A
+
+MSE: 0,0134
+
+MAE: 0,1010
+
+RMSE: 0,1156
+
+R-squared: 0,5690
+
+Datensatz B
+
+MSE: 0,2137
+
+MAE: 0,4038
+
+RMSE: 0,4623
+
+R-squared: 0,0448
+
+Datensatz C
+
+MSE: 0,0132
+
+MAE: 0,0987
+
+RMSE: 0,1148
+
+R-squared: 0,9954
+
+Datensatz D
+
+MSE: 0,0824
+
+MAE: 0,2467
+
+RMSE: 0,2870
+
+R-squared: 0,9716
+
+0.01:
+
+Dataset A Metrics
+
+MSE: 0,0134
+
+MAE: 0,1010
+
+RMSE: 0,1156
+
+R-squared: 0,5690
+
+Dataset B Metrics
+
+MSE: 0,2137
+
+MAE: 0,4038
+
+RMSE: 0,4623
+
+R-squared: 0,0448
+
+Dataset C Metrics
+
+MSE: 0,0132
+
+MAE: 0,0987
+
+RMSE: 0,1148
+
+R-squared: 0,9954
+
+Dataset D Metrics
+
+MSE: 0,0824
+
+MAE: 0,2467
+
+RMSE: 0,2870
+
+R-squared: 0,9716
+
+0.001:
+
+Dataset A Metrics
+
+MSE: 0,0832
+
+MAE: 0,2369
+
+RMSE: 0,2884
+
+R-squared: -1,6836 (Sehr schlechte Anpassung)
+
+Dataset B Metrics
+
+MSE: 0,2687
+
+MAE: 0,4404
+
+RMSE: 0,5184
+
+R-squared: -0,2011
+
+Dataset C Metrics
+
+MSE: 0,2852
+
+MAE: 0,4273
+
+RMSE: 0,5341
+
+R-squared: 0,8994
+
+Dataset D Metrics
+
+MSE: 0,3540
+
+MAE: 0,4778
+
+RMSE: 0,5950
+
+R-squared: 0,8780
