@@ -1,8 +1,9 @@
 # Data Mining Assignment 1 - Report
 
-**Date:** March 21, 2026  
+**Date:** April 09, 2026  
 **Subject:** Data Mining (Assignment 1)  
-**Author:** [Your Name]
+**Author:** Arthur Lenné, 314706802
+**Github-Link:** https://github.com/axxtur/DM2026-Assignment-1
 
 ---
 
@@ -334,7 +335,7 @@ In contrast to the decreasing standard deviation, the median values remained hig
 **Top 5 Strongest Negative Correlations:**
 <p><img src="real_world_classification/data_exploration/image%20copy%202.png" width="500"></p>
 
-**Observation on Correlation Strengths:** `PetalWidthCompactness` exhibits a near-perfect positive linear relationship with the target column (r ≈ 0.9917). In stark contrast, while the bottom 5 features mathematically represent the "strongest" negative correlations, their actual values (ranging from -0.074 to -0.096) are exceedingly close to zero. This indicates that there is virtually no meaningful inverse linear relationship between any feature in the dataset and `PetalWidthCm`.
+**Observation on Correlation Strengths:** `PetalWidthCompactness` exhibits a near-perfect positive linear relationship with the target column (r $\approx$ 0.9917). In stark contrast, while the bottom 5 features mathematically represent the "strongest" negative correlations, their actual values (ranging from -0.074 to -0.096) are exceedingly close to zero. This indicates that there is virtually no meaningful inverse linear relationship between any feature in the dataset and `PetalWidthCm`.
 
 ### 4.3 Boxplot Analysis
 <img src="real_world_classification/data_exploration/image%20copy%203.png" width="600">
@@ -360,7 +361,7 @@ To analyze the effect of L2 regularization during training, the model was traine
 </table>
 
 **Observation on Loss Curves:**
-An analysis of the loss curves across the four different λ values reveals the profound impact of L2 regularization on model training. For the baseline model with no regularization (λ=0) and the model with a very weak penalty (λ=0.01), the loss curves appear virtually identical. Both exhibit a noticeable generalization gap, where the validation loss remains consistently higher than the training loss, indicating a slight tendency to overfit the training data. The penalty of 0.01 is mathematically too small to meaningfully constrain the model's weights. However, when the regularization parameter is optimally increased to λ=1, the generalization gap visibly narrows. The L2 penalty successfully restricts the weights, preventing the model from over-adapting to the underlying noise in the training data and leading to a much more stable validation loss. Conversely, applying an excessive penalty of λ=100 restricts the weights so severely that the model loses its capacity to learn entirely. In this scenario, the loss drops only slightly during the initial iterations before flatlining at a very high error rate, demonstrating a classic symptom of severe underfitting.
+An analysis of the loss curves across the four different $\lambda$ values reveals the profound impact of L2 regularization on model training. For the baseline model with no regularization ($\lambda$=0) and the model with a very weak penalty ($\lambda$=0.01), the loss curves appear virtually identical. Both exhibit a noticeable generalization gap, where the validation loss remains consistently higher than the training loss, indicating a slight tendency to overfit the training data. The penalty of 0.01 is mathematically too small to meaningfully constrain the model's weights. However, when the regularization parameter is optimally increased to $\lambda$=1, the generalization gap visibly narrows. The L2 penalty successfully restricts the weights, preventing the model from over-adapting to the underlying noise in the training data and leading to a much more stable validation loss. Conversely, applying an excessive penalty of $\lambda$=100 restricts the weights so severely that the model loses its capacity to learn entirely. In this scenario, the loss drops only slightly during the initial iterations before flatlining at a very high error rate, demonstrating a classic symptom of severe underfitting.
 
 <hr>
 
@@ -383,6 +384,6 @@ Based on the loss curve analysis, a lambda value of 1 proved to be the optimal r
 
 **Observation and Analysis:**
 
-Based on the insights gained from the loss curves, a λ value of 1 was identified as the optimal regularization parameter. A direct comparison of the testing results between the unregularized baseline model and this optimally regularized model demonstrates a clear, measurable improvement in predictive performance. By penalizing large weights, the L2 regularized model becomes less sensitive to noise in the training data, which directly translates to better generalization on the unseen test set. Quantitatively, the overall accuracy improves from 72.00% to 74.00%, and the F1-score, which provides a balanced measure of precision and recall, increases from 0.7308 to 0.7484. Furthermore, the confusion matrix for the regularized model reflects this enhancement by showing a reduction in both false positives and false negatives compared to the baseline. It is also worth noting that while testing was conducted for the extreme case of λ=100, the model had completely collapsed into a trivial state—predicting only a single class and yielding an accuracy of roughly 50.67%. This total collapse further confirms that λ=1 strikes the correct balance between bias and variance for this specific classification task.
+Based on the insights gained from the loss curves, a $\lambda$ value of 1 was identified as the optimal regularization parameter. A direct comparison of the testing results between the unregularized baseline model and this optimally regularized model demonstrates a clear, measurable improvement in predictive performance. By penalizing large weights, the L2 regularized model becomes less sensitive to noise in the training data, which directly translates to better generalization on the unseen test set. Quantitatively, the overall accuracy improves from 72.00% to 74.00%, and the F1-score, which provides a balanced measure of precision and recall, increases from 0.7308 to 0.7484. Furthermore, the confusion matrix for the regularized model reflects this enhancement by showing a reduction in both false positives and false negatives compared to the baseline. It is also worth noting that while testing was conducted for the extreme case of $\lambda$=100, the model had completely collapsed into a trivial state—predicting only a single class and yielding an accuracy of roughly 50.67%. This total collapse further confirms that $\lambda$=1 strikes the correct balance between bias and variance for this specific classification task.
 
  
