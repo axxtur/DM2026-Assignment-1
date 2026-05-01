@@ -1,121 +1,130 @@
-# Data Mining Assignment 2 - Report
-
-**Date:** April 11, 2026  
-**Subject:** Data Mining (Assignment 2)  
-**Author:** Arthur Lenné, 314706802
-**Github-Link:** https://github.com/axxtur/DM2026-Assignment-2
-
+---
+title: "Data Mining Assignment 2 - Report"
+author: "Arthur Lenné (314706802)"
+date: "April 11, 2026"
+geometry: margin=2.5cm
+output: pdf_document
+header-includes:
+  - \usepackage{float}
+  - \let\origfigure\figure
+  - \let\endorigfigure\endfigure
+  - \renewenvironment{figure}[1][H]{\origfigure[H]\centering}{\endorigfigure}
 ---
 
 ## 0. Project Setup and Preparation
 
-To begin Assignment 2, the following setup steps were performed to ensure a clean workspace and continuity from previous tasks:
-
-1.  **Workspace Initialization:** A new dedicated folder `assignment_2` was created.
-2.  **Environment Setup:** A new Jupyter notebook `Real_World_Classification.ipynb` was initialized within the directory.
-3.  **Data Migration:** The dataset `NYCU_Iris.csv` and the mobile price dataset `mobile_price.csv` were copied into the project folder.
-4.  **Code Reuse:** Preprocessing logic (imputation, splitting) was migrated from Assignment 1's `Real_World_Classification.ipynb` to the new notebook.
-5.  **Model Update:** The `linear_model.py` file was updated to the latest version, implementing the `BaseEstimator` and `ClassifierMixin` interfaces from scikit-learn to ensure compatibility with standard cross-validation tools.
+To begin the second assignment, several setup procedures were executed to ensure a clean workspace and maintain continuity from prior tasks. First, a dedicated directory named `assignment_2` was created, within which a new Jupyter notebook, `Real_World_Classification.ipynb`, was initialized. Subsequently, the `NYCU_Iris.csv` and `mobile_price.csv` datasets were migrated into this project folder. To leverage prior work, the data preprocessing logic—specifically the imputation and data splitting routines—was transitioned from the first assignment's notebook. Finally, the `linear_model.py` script was updated to its latest version. This crucial update incorporated the `BaseEstimator` and `ClassifierMixin` interfaces from the `scikit-learn` library, ensuring seamless compatibility with standard cross-validation utilities.
 
 ---
 
 ## 1. K-fold Cross-Validation (Task 1)
 
 ### 1.1 Methodology and Preprocessing Discovery
-The objective of this task was to perform a grid search for optimal hyperparameters using 5-fold cross-validation (`random_state=40`).
+The primary objective of this task was to conduct a grid search to identify optimal hyperparameters, utilizing 5-fold cross-validation with a fixed random state of 40. Initially, the statistical distribution of the dataset was analyzed both before and after imputing missing values using the K-Nearest Neighbors (KNN) algorithm.
 
-**Missing Value Imputation:**
-The statistical distribution was analyzed before and after filling missing values with the K-Nearest Neighbors (KNN) imputer.
 ![Imputation Statistics (Before/After)](task1/01.png)
 
-**Critical Implementation Note (Normalization):**
-During the initial run using raw data, the model encountered a **`RuntimeWarning: overflow encountered in exp`** within the sigmoid activation function. This was caused by features with large scales (e.g., `AvgDust`) causing the weights to explode. 
-
-As a result, a normalization step was added to scale all features to the `[0, 1]` range. This modification eliminated the numerical instability and allowed the model to achieve significantly higher accuracy (~72-74%).
+During the preliminary execution with raw data, a critical numerical instability was encountered: the model triggered a **`RuntimeWarning: overflow encountered in exp`** within the sigmoid activation function. This instability was directly caused by features possessing large scales, such as `AvgDust`, which resulted in exploding weights during calculation. To rectify this issue, a strict normalization step was integrated to scale all feature values cleanly within the `[0, 1]` range. This modification successfully eliminated the numerical instability and substantially improved the model's overall performance, elevating the accuracy to approximately 72% to 74%.
 
 ### 1.2 Results: 5-Fold Grid Search
-The model was evaluated across 16 combinations of Learning Rates {0.005, 0.01, 0.1, 0.5} and L2 Regularization parameters {1.0, 2.0, 4.0, 8.0}.
+The model's performance was systematically evaluated across a grid of 16 distinct hyperparameter combinations, pairing learning rates of {0.005, 0.01, 0.1, 0.5} with L2 regularization (Lambda) parameters of {1.0, 2.0, 4.0, 8.0}.
 
 **Accuracy Grid (4x4 Table):**
+
 ![4x4 Accuracy Grid](task1/02.png)
 
 ### 1.3 Final Evaluation (Top 2 Settings)
-Based on the validation grid, the two best performing hyperparameter settings were selected for final testing on the unseen test set.
+Based on the validation performance grid, the two most effective hyperparameter configurations were isolated for a final evaluation on the unseen test dataset.
 
 #### **Top Setting 1: Learning Rate 0.1, Lambda 2.0**
-*   **Learning Curve:**
+
 ![Learning Curve (LR 0.1, L 2.0)](task1/03.png)
-*   **Final Metrics (Test Set):**
+
+\medskip
+
 ![Metrics (LR 0.1, L 2.0)](task1/04.png)
 
 #### **Top Setting 2: Learning Rate 0.1, Lambda 4.0**
-*   **Learning Curve:**
+
 ![Learning Curve (LR 0.1, L 4.0)](task1/05.png)
-*   **Final Metrics (Test Set):**
+
+\medskip
+
 ![Metrics (LR 0.1, L 4.0)](task1/06.png)
 
 ### 1.4 Observations
+Based on the 5-fold cross-validation grid and the subsequent final evaluation on the testing data, several key insights regarding the model's behavior emerge. The cross-validation results demonstrate that the learning rate acts as the primary driver of performance. A learning rate of 0.1 proved optimal, yielding the highest and most stable average accuracies, ranging between 71% and 73%. In contrast, lower learning rates (0.005 and 0.01) likely resulted in underfitting or overly slow convergence within the epoch limit, capping accuracy at around 57% to 68%. 
 
-Based on the 5-fold cross-validation grid and the final evaluation on the testing data, several key observations can be made regarding the model's behavior:
+While the model exhibited relative robustness to variations in the L2 penalty at the optimal learning rate of 0.1, combining a high learning rate (0.5) with aggressive regularization (Lambda 4.0 and 8.0) caused performance to severely degrade, dropping to near 50%. This suggests that executing large, aggressive weight updates while simultaneously applying strict penalties prevented the model from accurately locating a viable minimum. Conversely, the learning curves for both top configurations demonstrate rapid and stable convergence, with the loss flattening efficiently within the first 50 to 100 epochs. Notably, the training and validation loss trajectories overlap almost perfectly throughout the process, indicating that the L2 regularization successfully mitigated overfitting and enabled the model to generalize effectively to unseen data.
 
-* **The Learning Rate "Sweet Spot":** The cross-validation results (from the 4x4 grid) demonstrate that the learning rate is the primary driver of performance. A learning rate of 0.1 proved optimal, yielding the highest and most stable average accuracies (~71% to ~73%). Lower learning rates (0.005 and 0.01) likely resulted in underfitting or overly slow convergence within the epoch limit, capping accuracy around 57% to 68%.
-* **Regularization Sensitivity at High Learning Rates:** While the model was relatively robust to changes in the L2 penalty (Lambda) at the optimal learning rate of 0.1, the combination of a high learning rate (0.5) and high regularization (Lambda = 4.0, 8.0) caused performance to severely degrade, dropping to ~50%. This suggests that making overly aggressive weight updates while simultaneously applying harsh weight penalties prevented the model from finding a viable minimum. 
-* **Rapid Convergence and Generalization:** The learning curves for both top settings demonstrate rapid and stable convergence, with the loss flattening out efficiently within the first 50 to 100 epochs. Notably, the training and validation loss curves overlap almost perfectly. This indicates that the L2 regularization successfully prevented overfitting, allowing the model to generalize well to unseen data.
-* **Test Performance vs. Validation:** Both top models performed exceptionally well on the unseen test set, actually slightly exceeding their cross-validation training averages (scoring 75.33% and 74.00% versus their CV averages of ~73%). 
-* **Classification Nuances:** When comparing the Confusion Matrices of the top two models, both achieved the exact same Recall for Class 1 (80.26%, correctly identifying 61 instances). The distinction lies in their Precision; the model with the lighter penalty (Lambda = 2.0) was slightly better at predicting Class 0, resulting in fewer false positives (22 versus 24) and a marginally higher overall F1-score (0.7673 vs. 0.7578).
+Finally, both leading models performed exceptionally well on the unseen test set, slightly exceeding their cross-validation training averages with scores of 75.33% and 74.00%. An examination of their respective confusion matrices reveals that both achieved identical recall for Class 1 (80.26%, correctly identifying 61 instances). The primary distinction lies in their precision; the model subjected to the lighter penalty (Lambda = 2.0) was marginally more adept at predicting Class 0, resulting in fewer false positives (22 compared to 24) and a slightly superior overall F1-score of 0.7673 compared to 0.7578.
+
 ---
 
 ## 2. Support Vector Machine - Mobile Price (Task 2)
 
 ### 2.1 Data Splitting
-The `mobile_price.csv` dataset was shuffled and split into Training (60%), Validation (20%), and Testing (20%) sets using a `random_state=42`.
+To initiate the Support Vector Machine (SVM) evaluation, the `mobile_price.csv` dataset was randomly shuffled and partitioned into three distinct subsets: a Training set (60%), a Validation set (20%), and a Testing set (20%). This split was executed utilizing a fixed random state (`random_state=42`) to ensure consistency and reproducibility across subsequent evaluations.
+
 ![Data Split Shapes](task2/01.png)
 
-### 2.2 Baseline SVM (C=1.0)
-A baseline SVM classifier was trained using the default regularization parameter $C=1.0$.
+\medskip
+
+### 2.2 Baseline SVM ($C=1.0$)
+Initially, a baseline SVM classifier was trained utilizing the default regularization parameter of $C=1.0$. This preliminary step established a foundational performance benchmark against which the effects of subsequent hyperparameter optimizations could be accurately measured.
+
 ![Baseline SVM Results](task2/02.png)
 
+\medskip
+
 ### 2.3 Hyperparameter Tuning (C-Value Exploration)
-To optimize the model, various values for the regularization parameter $C \in \{0.001, 0.01, 0.1, 1, 10, 100, 1000, 10000\}$ were evaluated. The accuracy and F1-score for each set are visualized below.
+To further optimize the model's performance, an extensive exploration of the regularization parameter was conducted. Various values for $C$ across a logarithmic scale—specifically $C \in \{0.001, 0.01, 0.1, 1, 10, 100, 1000, 10000\}$—were systematically evaluated. The resulting accuracy and F1-scores for each parameter configuration are visualized in the charts below, providing a clear map of the model's performance landscape.
+
 ![Accuracy and F1-score vs C](task2/03.png)
 
+\medskip
+
 ### 2.4 Observations and Generalization
+Based on the visualization of the accuracy and F1-scores across the logarithmic scale of $C$, the model achieving optimal generalization performance is found at $C=10$. The resulting graphs effectively illustrate the classic bias-variance trade-off inherent to Support Vector Machine regularization.
 
-Based on the visualization of the accuracy and F1-scores across the logarithmic scale of $C$, the model that provides the best generalization performance is **$C = 10$**. 
+At exceptionally low values of $C$, such as $10^{-3}$ and $10^{-2}$, the model imposes a severe penalty on complex decision boundaries, thereby forcing an overly simplistic fit. This constraint leads to pronounced underfitting, demonstrated by exceedingly low training, validation, and testing scores that originate around 25% and 50%, respectively. In this regime, the model is fundamentally incapable of capturing the underlying patterns within the data.
 
-**Reasoning and the Bias-Variance Trade-off:**
-The graphs perfectly illustrate the classic bias-variance trade-off associated with SVM regularization:
+As $C$ increases, performance improves rapidly. The validation and test curves reach their peak at $C=10$, achieving an accuracy of approximately 96% to 97%. At this specific threshold, the trajectories for training, validation, and testing converge tightly. This minimal divergence indicates that the model has successfully isolated the true underlying signal without memorizing extraneous noise, ultimately yielding excellent generalization on unseen data.
 
-* **Underfitting (High Bias):** At very low values of $C$ (e.g., $10^{-3}$ and $10^{-2}$), the model imposes a massive penalty for complex decision boundaries, forcing an overly simplistic model. This results in severe underfitting, evidenced by the extremely low training, validation, and testing scores (starting around ~25% and ~50% respectively). The model is simply unable to capture the underlying patterns in the data.
-* **The Optimal Sweet Spot ($C = 10$):** As $C$ increases, performance rapidly improves. The validation and test curves peak at $C = 10$, achieving an accuracy of approximately 96-97%. At this specific point, the training, validation, and testing lines are tightly clustered together. This minimal gap indicates that the model has successfully learned the true signal of the data without memorizing noise, resulting in excellent generalization to unseen data.
-* **Overfitting (High Variance):** When $C$ is increased further ($10^2$, $10^3$, $10^4$), the regularization constraint becomes too weak, allowing the model to fit perfectly to the training data. We see the training curve (blue line) continue to climb until it hits a perfect $1.0$ (100% accuracy and F1-score). However, the validation and test curves detach from the training curve, plateauing and even slightly declining. This widening gap demonstrates that the model has begun to overfit—memorizing the specific noise and anomalies of the training set at the expense of its ability to generalize.
+Conversely, when $C$ is increased further to $10^2$, $10^3$, or $10^4$, the regularization constraint becomes insufficiently stringent, permitting the model to conform perfectly to the training data. Consequently, the training curve ascends until it achieves a flawless score of $1.0$ in both accuracy and F1-score. Simultaneously, however, the validation and test curves decouple from the training trajectory, plateauing and even exhibiting a slight decline. This widening gap provides clear evidence of overfitting; the model begins to memorize specific noise and anomalies in the training set, which severely compromises its capacity to generalize.
+
 ---
 
 ## 3. Association Rule Mining (Task 3)
 
 ### 3.1 Data Preprocessing and Discretization
-The analysis focused on mid-range phones (`price_range = 1`). Four hardware features were selected: `ram`, `int_memory`, `px_width`, and `battery_power`. 
+This phase of the analysis focused exclusively on mid-range mobile phones, designated by the target variable `price_range = 1`. To facilitate rule mining, four continuous hardware features were selected for categorization: `ram`, `int_memory`, `px_width`, and `battery_power`. 
 
-As per the requirements, the data was discretized into 'low', 'medium', and 'high' categories based on the **value range (max - min)** using a **3:4:3 ratio**. This ensures that the categories represent physical hardware tiers rather than simple data frequency percentiles.
+In accordance with the project requirements, these continuous variables were discretized into 'low', 'medium', and 'high' categories. This discretization was calculated based on the absolute value range (maximum minus minimum) utilizing a strict 3:4:3 ratio. This methodological approach ensures that the resulting categories represent objective physical hardware tiers rather than merely reflecting simple data frequency percentiles.
 
 ### 3.2 Frequent Itemsets (Task 3a)
-Using the FP-growth algorithm with a minimum support threshold of **0.3**, the following frequent itemsets were identified:
+Utilizing the FP-growth algorithm with an established minimum support threshold of 0.3, the following frequent itemsets were successfully extracted:
+
 ![Frequent Itemsets Table](task3/01.png)
 
+\medskip
+
 ### 3.3 Association Rules (Task 3b)
-Based on the frequent itemsets, association rules were generated using the criteria: support $\ge$ 0.3, confidence $\ge$ 0.4, and lift $\ge$ 0.8.
+Based on the frequent itemsets identified above, association rules were systematically generated adhering to the following strict criteria: a minimum support of $\ge 0.3$, a minimum confidence of $\ge 0.4$, and a minimum lift of $\ge 0.8$.
+
 ![Association Rules Table](task3/02.png)
 
+\medskip
+
 ### 3.4 Observations
+Based on the frequent itemsets and association rules extracted via the FP-growth algorithm, several defining characteristics of mid-range mobile phones (`price_range = 1`) can be identified. A prominent feature of this price segment is the sheer dominance of "medium" hardware specifications. Most notably, medium RAM capacity (`ram_medium`) exhibits an exceptionally high support of 0.682, indicating that nearly 70% of all mid-range devices in the dataset share this specification. Other medium-tier attributes, such as pixel width, battery power, and internal memory, also demonstrate robust standalone support, each hovering around 0.41.
 
-Based on the frequent itemsets and association rules extracted using the FP-growth algorithm, several defining characteristics of mid-range mobile phones (`price_range = 1`) become apparent:
+Interestingly, alongside these dominant medium specifications, lower-tier components also frequently emerge. Features like low internal memory (`int_memory_low`) and low battery power (`battery_power_low`) record significant support values of 0.316 and 0.308, respectively. This suggests a strategic compromise by manufacturers: to maintain competitive pricing while providing the crucial baseline of medium RAM, cost reductions are occasionally made in storage or battery capacity.
 
-* **The Dominance of "Medium" Specifications:** The frequent itemsets are heavily populated by the "medium" category. Most notably, **`ram_medium`** has an overwhelmingly high support of **0.682**, meaning nearly 70% of all mid-range phones in this dataset feature medium RAM capacity. Medium pixel width, battery power, and internal memory also show strong standalone support (all hovering around 0.41).
-* **Presence of Lower-Tier Components:** Interestingly, while medium specs dominate, `int_memory_low` (support 0.316) and `battery_power_low` (support 0.308) also appear as frequent 1-itemsets. This suggests that manufacturers producing mid-range phones occasionally compromise on storage or battery capacity to keep costs down, while maintaining the crucial "medium" RAM.
-* **Strong Confidence Directed Towards RAM:** The generated association rules reveal an interesting asymmetry. 
-    * If a phone has `px_width_medium` or `battery_power_medium`, there is a high probability (confidence of **73.5%** and **76.8%**, respectively) that it also has `ram_medium`. 
-    * Conversely, the reverse rules (predicting battery or pixel width based on having medium RAM) yield much lower confidences (~44% to 46%). This statistical behavior is directly driven by the massive base frequency of `ram_medium`. Because medium RAM is practically a standard baseline for this price tier, other medium-tier features naturally co-occur with it frequently.
-* **Positive, but Moderate Correlation (Lift):** All four rules exhibit a Lift value strictly greater than 1.0 (ranging from **1.07** to **1.12**). A lift greater than 1 indicates a positive correlation—meaning the items in the antecedents and consequents appear together more often than would be expected if they were statistically independent. However, because these lift values are relatively close to 1, the positive association is moderate rather than overwhelmingly strong, reflecting the generally standard, uniform hardware configurations found in this specific price segment.
+Furthermore, the generated association rules reveal a distinct statistical asymmetry, with a strong confidence directed towards RAM. If a device features a medium pixel width or medium battery power, there is a high probability—73.5% and 76.8%, respectively—that it will also possess medium RAM. Conversely, the reverse rules, which predict battery or pixel width based on the presence of medium RAM, yield significantly lower confidences ranging from 44% to 46%. This behavioral pattern is directly attributable to the massive base frequency of medium RAM; because it serves as a practically universal baseline for this price tier, other medium-tier features naturally co-occur with it at a high rate.
+
+Finally, an analysis of the Lift metric confirms a positive, albeit moderate, correlation among these features. All four observed rules exhibit a Lift value strictly greater than 1.0, ranging between 1.07 and 1.12. While a lift above 1.0 indicates that the antecedent and consequent items appear together more frequently than would be expected under statistical independence, the proximity of these values to 1.0 suggests that the associations are moderate rather than overwhelmingly strong. This ultimately reflects the generally standardized and uniform hardware configurations that characterize the mid-range smartphone market.
+
 ---
 
 ## 4. PCA and K-Means (Task 4)
@@ -125,67 +134,96 @@ The mobile price dataset was standardized using z-score normalization (`Standard
 
 **PCA Visualization:**
 The scatter plot below visualizes the first two principal components, with colors representing the original class labels (`price_range`).
+
 ![PCA 2D Projection](task4/01.png)
 
+\medskip
+
 ### 4.2 K-Means Clustering: Full Features vs. PCA
-K-Means clustering ($K=4$) was performed using two approaches: all features and the 2D PCA-transformed features. Performance was measured using the **Adjusted Rand Score (ARS)**.
+K-Means clustering ($K=4$) was performed using two distinct approaches: utilizing all available features and utilizing strictly the 2D PCA-transformed features. The clustering performance was measured and compared using the Adjusted Rand Score (ARS).
 
 **Approach 1: Clustering on All Features**
-Clustering was performed on the full standardized feature matrix.
+Clustering was performed on the full standardized high-dimensional feature matrix.
+
 ![K-Means All Features](task4/02.png)
 
+\medskip
+
 **Approach 2: Clustering on PCA 2D Features**
-Clustering was performed on the 2D subspace defined by the first two principal components.
+Clustering was performed exclusively on the 2D subspace defined by the first two principal components.
+
 ![K-Means PCA Features](task4/03.png)
 
+\medskip
+
 ### 4.3 Observations
+Based on the visualizations and the Adjusted Rand Scores (ARS), several critical insights emerge regarding the dataset's inherent structure and the efficacy of unsupervised clustering for this specific classification problem. First, an analysis of the initial PCA projection of the true labels reveals remarkably poor natural separability; the four distinct price ranges overlap almost entirely within the subspace defined by the first two principal components. This substantial overlap indicates that the most significant directions of overall variance within the dataset do not align with the price tiers, demonstrating that the classes cannot be easily separated using simple linear combinations of features.
 
-Based on the visualizations and the Adjusted Rand Scores (ARS), several critical insights can be drawn regarding the dataset's structure and the effectiveness of unsupervised clustering for this specific problem:
+Consequently, this lack of inherent spatial separation dictates the failure of unsupervised clustering algorithms. The Adjusted Rand Score, which quantifies the similarity between generated clustering results and ground-truth labels, yielded abysmal results for both K-Means approaches evaluated: 0.0060 and 0.0017. Because scores approaching zero indicate practically random data assignments, it is evident that mobile price tiers do not form natural, cohesive groupings based on standard Euclidean distance in the feature space. Therefore, accurately predicting these price ranges fundamentally requires a supervised learning approach—such as the Support Vector Machine utilized in previous tasks—rather than relying on unsupervised spatial clustering.
 
-* **Poor Natural Separability:** The initial PCA projection of the true labels reveals that the four price ranges overlap almost entirely within the subspace of the first two principal components. This indicates that the most significant directions of overall variance in the dataset do *not* correspond to the price tiers. The classes are not easily separable using simple linear combinations of features.
-* **Failure of Unsupervised Clustering:** The Adjusted Rand Score (ARS) measures the similarity between the clustering results and the ground truth labels, with a score near 0.0 indicating practically random assignments. Both K-Means approaches yielded abysmal scores (**0.0060** and **0.0017**). This demonstrates that mobile price tiers do not form natural, cohesive groupings based on Euclidean distance in the feature space. Predicting price range requires supervised learning (like the SVM used in Task 2) rather than unsupervised spatial clustering.
-* **The Impact of Dimensionality Reduction:** * **Clustering on All Features (ARS = 0.0060):** When K-Means operates on the full high-dimensional space, the resulting clusters look somewhat scattered and overlapping when forced into a 2D projection. It retains slightly more of the dataset's true structure, resulting in a marginally higher (though still poor) ARS.
-    * **Clustering on PCA 2D Features (ARS = 0.0017):** When K-Means is restricted strictly to the 2D PCA data, the algorithm simply divides the dense 2D blob into four neat, geometric quadrants. While this looks visually "cleaner" in the scatter plot, it completely ignores the variance from the discarded dimensions. Consequently, this method loses critical information and performs even worse in matching the true price ranges.
+Furthermore, a comparison of these two clustering attempts highlights the severe impact of dimensionality reduction on model performance. When K-Means operates across the full, high-dimensional feature space, it manages to retain slightly more of the dataset's true structural complexity. This results in a marginally higher—though still practically ineffective—ARS of 0.0060, producing clusters that understandably appear scattered and overlapping when forced into a 2D projection. Conversely, when the K-Means algorithm is strictly constrained to the two-dimensional PCA data, it artificially partitions the dense data mass into four neat, geometric quadrants. While this resulting scatter plot may appear visually cleaner, the model has completely ignored the variance from all discarded dimensions. By systematically losing this critical information, the algorithm performs even worse at matching the true price ranges, yielding an ARS of just 0.0017.
+
 ---
 
 ## 5. Enhancing K-Means with Association Rule Mining (Task 5)
 
 ### 5.1 Proposed Method: Feature Weighting via ARM
-To improve K-Means clustering, a framework was designed to weight features based on their predictive power derived from Association Rule Mining (ARM).
+To enhance the performance of standard K-Means clustering, a novel framework was developed to weight features based on their predictive power, as derived from Association Rule Mining (ARM). The underlying rationale for this approach addresses a fundamental limitation of traditional K-Means, which inherently assumes that all features contribute equally to cluster formation. In the context of the mobile price dataset, however, specific hardware components—most notably RAM capacity—exert a substantially greater influence on the final classification than others. By leveraging ARM to identify which specific feature-value pairs strongly correlate with a given target price tier, "Importance Weights" can be calculated to strategically stretch the geometric feature space along its most relevant dimensions.
 
-**Inspiration:**
-Standard K-Means assumes all features contribute equally to cluster formation. However, in the mobile price dataset, certain hardware features (like `ram`) are far more influential than others. By using ARM to identify which feature-value pairs strongly imply a specific `price_range`, we can calculate "Importance Weights" to stretch the feature space along relevant dimensions.
+The implementation of this framework follows a systematic, multi-step pipeline. Initially, continuous features are transformed into categorical data using a robust, quantile-based discretization method designed to effectively manage duplicate values. Once discretized, target-driven rule mining is conducted by structuring transactions that combine these feature categories with the target price range. The FP-growth algorithm is then deployed specifically to extract rules where the consequent dictates a price tier. Subsequently, a precise weighting mechanism is applied: each feature's importance weight is calculated by aggregating the Lift metric of the association rules in which it participates. Consequently, features demonstrating higher lift values, which indicate a stronger, non-random association with specific price tiers, are systematically assigned proportionally higher weights.
 
-**Design Details:**
-1.  **Robust Discretization:** Features were discretized into categories using a quantile-based approach that handles duplicate values.
-2.  **Target-Driven Rule Mining:** Transactions were formed by combining discretized features with the target `price_range`. FP-growth was used to find rules where the consequent is a price tier.
-3.  **Lift-Based Weighting:** Each feature's weight was calculated by aggregating the **Lift** of rules it participated in. Features with higher lift values (indicating stronger association with price tiers) received higher weights.
-4.  **Weighted K-Means:** The standardized feature matrix was multiplied by these weights before clustering.
-5.  **Hungarian Algorithm Mapping:** Since clustering IDs are arbitrary, the Hungarian algorithm was used to find the optimal 1-to-1 mapping between clusters and true price labels for valid metric calculation.
+In the final stages of the pipeline, these derived weights are multiplied against the standardized feature matrix before the clustering algorithm is executed, successfully biasing the distance calculations toward the most informative variables. Finally, because unsupervised clustering generates inherently arbitrary identification labels, the Hungarian algorithm is utilized to establish an optimal, one-to-one mapping between the newly generated clusters and the ground-truth price labels. This critical final step ensures that the resulting structure can be accurately evaluated using standard classification metrics.
 
-### 5.2 Baseline Performance
-The performance of the original K-Means algorithm was averaged over the seeds: `[0, 10, 42, 100, 999]`.
+### 5.2 Baseline Performance vs. Enhanced Method
+The performance of the original K-Means algorithm was averaged over the specific seeds required by the assignment (`[0, 10, 42, 100, 999]`).
+
 ![Baseline K-Means Performance](task5/01.png)
 
-### 5.3 Enhanced Method Results
+\medskip
+
 The results of the robust discretization and the subsequent weighted clustering are shown below.
 
-**Discretization results:**
 ![Robust Discretization](task5/02.png)
 
-**Feature Weights and Enhanced Metrics:**
+\medskip
+
 ![Top Weights and Enhanced Metrics](task5/03.png)
 
-### 5.4 Performance Comparison
-The plot below compares the average performance of the Baseline vs. the Enhanced method across Accuracy, Precision, Recall, and F1-score.
+\medskip
+
 ![Performance Comparison Chart](task5/04.png)
 
+\medskip
+
+### 5.3 Feature Importance Analysis
+To better understand the model design, the importance weights generated by our ARM-based framework were visualized. 
+
+![Feature Weights derived from ARM](task5/05_feature_weights.png)
+
+\medskip
+
+The weighting mechanism correctly identified the primary price drivers in the mobile industry. Specifically, RAM capacity received the highest calculated weight of approximately 3.9, reflecting its critical role as the most significant hardware differentiator. Furthermore, battery power emerged as a secondary, yet substantial, driver of overall device pricing.
+
+### 5.4 Experimental Sensitivity Analysis (Support Threshold)
+To provide additional experimental analysis and ensure the robustness of the framework, a sensitivity study was conducted. We varied the `min_support` threshold for the FP-Growth algorithm to observe its effect on the final clustering performance.
+
+![Sensitivity Analysis: F1-Score vs. Min Support](task5/06_sensitivity.png)
+
+\medskip
+
+**Comparison Table:**
+
+| Method | Avg Accuracy | Avg F1-Score |
+| :--- | :--- | :--- |
+| **Original K-Means (Baseline)** | **29.62%** | **29.41%** |
+| Enhanced (Supp 0.02) | 47.54% | 46.72% |
+| Enhanced (Supp 0.05) | 47.57% | 46.34% |
+| Enhanced (Supp 0.10) | 47.65% | 46.15% |
+| **Enhanced (Supp 0.15)** | **48.15%** | **46.24%** |
+
+\medskip
 
 ### 5.5 Final Analysis
+The integration of Association Rule Mining (ARM) to weight features prior to clustering yields a significant and measurable improvement over the baseline algorithm. Initially, the standard K-Means approach performed only marginally better than random guessing, hovering around an accuracy of 29.6% across all metrics. This baseline limitation stems from K-Means' reliance on standard Euclidean distance, which inherently treats all twenty features with equal importance. By introducing ARM-derived feature weights, the model effectively implements an automated, data-driven scaling mechanism. This approach strategically stretches the feature space along axes that strongly correlate with price and compresses irrelevant dimensions, thereby forcing the algorithm to cluster devices based on highly predictive hardware characteristics. Consequently, model performance surged to a peak accuracy of 48.15% at a support threshold of 0.15, representing a relative improvement of over 60%. While an accuracy of roughly 48% indicates that purely distance-based unsupervised clustering still cannot fully replicate the precision of supervised methods in defining complex pricing tiers, the methodology undeniably enhances overall clustering efficacy.
 
-The integration of Association Rule Mining (ARM) to weight features prior to clustering resulted in a significant and measurable improvement over the baseline algorithm.
-
-* **Substantial Performance Gains:** The baseline K-Means algorithm performed only slightly better than random guessing, hovering around **29.6%** across all metrics (Accuracy, Precision, Recall, F1-score). By applying the ARM-derived feature weights, performance jumped to approximately **47.6%**. This represents an absolute increase of ~18% and a relative improvement of over 60%. While an accuracy of 47% confirms that purely distance-based unsupervised clustering still struggles to perfectly recreate complex pricing tiers (compared to the 96% accuracy of the supervised SVM in Task 2), the enhancement is undeniably effective.
-* **Overcoming the Curse of Dimensionality:** Standard K-Means relies on Euclidean distance, treating all 20 features with equal importance. In a dataset where many features are likely noisy or irrelevant to the final price, the distance calculations become diluted. The ARM weighting acts as an automated, data-driven feature scaling mechanism. By "stretching" the feature space along the axes that strongly associate with price and "shrinking" the irrelevant axes, the Euclidean distance algorithm is forced to group phones based on the features that actually matter.
-* **Validation of Domain Knowledge:** The ARM methodology correctly identified `ram` as the most influential feature by a wide margin (weight of **3.93**). This aligns perfectly with real-world consumer electronics pricing, where memory capacity is the primary differentiator between budget, mid-range, and flagship devices. 
-* **The Binary Feature Artifact:** It is worth noting the behavior of the secondary features (`blue`, `dual_sim`, `four_g`, `three_g`). All four received an identical weight of **1.9998**. Because these are all binary (0 or 1) features, this uniformity suggests a mathematical artifact in how the Lift was aggregated during the rule mining phase for variables with only two distinct states. Even so, the weighting system successfully prioritized these connectivity and design features over continuous features that may have possessed high variance but low actual correlation with the target price.
+Furthermore, experimental analysis highlights the stability and sensitivity of this weighted approach. Achieving peak accuracy at the relatively high support threshold of 0.15 suggests that isolating the most frequent and stable hardware patterns provides a much cleaner signal for feature weighting than incorporating millions of rare, potentially noisy rules generated at lower thresholds. Finally, a distinct pattern emerged regarding binary secondary features—specifically Bluetooth, dual SIM, 4G, and 3G capabilities. All four attributes received an identical calculated weight of 1.9998. This uniformity likely points to a mathematical artifact in the aggregation of the Lift metric during the rule-mining phase for variables possessing only two distinct states. Nevertheless, the ARM weighting system successfully prioritized these critical connectivity and design features over continuous variables that, despite exhibiting high variance, lacked a meaningful correlation with the target price.
