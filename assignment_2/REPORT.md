@@ -2,6 +2,7 @@
 title: "Data Mining Assignment 2 - Report"
 author: "Arthur Lenné (314706802)"
 date: "April 11, 2026"
+
 geometry: margin=2.5cm
 output: pdf_document
 header-includes:
@@ -11,9 +12,12 @@ header-includes:
   - \renewenvironment{figure}[1][H]{\origfigure[H]\centering}{\endorigfigure}
 ---
 
+**GitHub Repository:** [https://github.com/axxtur/DM2026-Assignment-1](https://github.com/axxtur/DM2026-Assignment-1)  
+*(See folder `assignment_2`)*
+
 ## 0. Project Setup and Preparation
 
-To begin the second assignment, several setup procedures were executed to ensure a clean workspace and maintain continuity from prior tasks. First, a dedicated directory named `assignment_2` was created, within which a new Jupyter notebook, `Real_World_Classification.ipynb`, was initialized. Subsequently, the `NYCU_Iris.csv` and `mobile_price.csv` datasets were migrated into this project folder. To leverage prior work, the data preprocessing logic—specifically the imputation and data splitting routines—was transitioned from the first assignment's notebook. Finally, the `linear_model.py` script was updated to its latest version. This crucial update incorporated the `BaseEstimator` and `ClassifierMixin` interfaces from the `scikit-learn` library, ensuring seamless compatibility with standard cross-validation utilities.
+To begin the second assignment, several setup procedures were executed to ensure a clean workspace and maintain continuity from prior tasks. First, a dedicated directory named `assignment_2` was created, within which a new Jupyter notebook, `Real_World_Classification.ipynb`, was initialized. Subsequently, the `NYCU_Iris.csv` and `mobile_price.csv` datasets were migrated into this project folder. To leverage prior work, the data preprocessing logic, specifically the imputation and data splitting routines, was transitioned from the first assignment's notebook. Finally, the `linear_model.py` script was updated to its latest version. This crucial update incorporated the `BaseEstimator` and `ClassifierMixin` interfaces from the `scikit-learn` library, ensuring seamless compatibility with standard cross-validation utilities.
 
 ---
 
