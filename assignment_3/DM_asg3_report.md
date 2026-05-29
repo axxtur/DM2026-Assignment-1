@@ -5,7 +5,7 @@
 **Kaggle Display Name:** [Your Kaggle Name]  
 
 ## 1. Code Repository and Instructions
-**Public GitHub Link:** `[Insert Public GitHub Link Here]`
+**Public GitHub Link:** `https://github.com/axxtur/DM2026-Assignment-1`
 
 To reproduce our results, please ensure you have Python 3 installed along with the required libraries, specifically numpy, pandas, lightgbm, scikit-learn, and scipy. You must place the Kaggle dataset files, namely train_data.npz and test_data.npz, in the nycu-data-mining-assignment-3/ directory. Once the data is in place, you can execute the 04_baseline_model.ipynb notebook, which represents our best-performing approach. Running this notebook will automatically extract both global and sub-window statistical features from the raw sequential data. It will then train a LightGBM Classifier using a 5-fold GroupKFold cross-validation strategy and ultimately generate the submission_ultimate.csv file required for the Kaggle upload.
 
