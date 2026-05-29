@@ -1,0 +1,42 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+
+# Virtual Environment
+venv/
+env/
+.venv/
+
+# macOS
+.DS_Store
+
+# IDEs
+.vscode/
+.idea/
+
+# Data and Submissions
+*.npz
+*.csv
+nycu-data-mining-assignment-3/
+
+# Model Checkpoints
+*.pth
+*.pt
+*.pkl
+*.h5
+
+# LaTeX Build Files (ignores temporary compile files but keeps your final .tex and .pdf)
+*.aux
+*.log
+*.out
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+
+# Agent/System directories
+.antigravitycli/
